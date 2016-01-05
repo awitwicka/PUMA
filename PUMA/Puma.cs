@@ -37,10 +37,10 @@ namespace PUMA
             Length3 = length3;
 
             Angle1 = (float)Math.PI / 6;
-            Angle2 = (float)Math.PI/2.5f;
-            Angle3 = (float)Math.PI/2.5f;
-            Angle4 = 0;
-            Angle5 = 0;
+            Angle2 = (float)Math.PI/2f;
+            Angle3 = (float)Math.PI/2f;
+            Angle4 = (float)Math.PI / 6;
+            Angle5 = (float)Math.PI / 6;
 
             this.device = device;
             L1 = new Cylinder(device, 2, 0.5f, 16, Color.Green);
@@ -80,23 +80,29 @@ namespace PUMA
 
             var F0 = new ArmOrientation(Vector3.Right, Vector3.Up, Vector3.Backward, Vector3.Zero);
             var F01 = Matrix.CreateFromAxisAngle(F0.AlphaY, Angle1); 
-            Matrix F1 = F0.ToMatrix() * F01;
+            Matrix F1 = F01 * F0.ToMatrix();
 
-            var F12 = Matrix.CreateTranslation(Vector3.Up * Length1) * Matrix.CreateFromAxisAngle(F1.Forward, Angle2); //here
+            //var F12 = Matrix.CreateTranslation(Vector3.Up * Length1) * Matrix.CreateFromAxisAngle(F1.Forward, Angle2); //here
             //Matrix F2 = F1 * F12;
-            Matrix F2 = F01 * Matrix.CreateFromAxisAngle(F1.Forward, Angle2) * F0.ToMatrix() * Matrix.CreateTranslation(Vector3.Up * Length1);
+            Matrix F2 = F01 * Matrix.CreateFromAxisAngle(F1.Forward, Angle2) * 
+                F0.ToMatrix() * Matrix.CreateTranslation(F1.Up * Length1);
 
-            var F23 = Matrix.CreateTranslation(F2.Up * Length2) * Matrix.CreateFromAxisAngle(F2.Forward, Angle3);
+            //var F23 = Matrix.CreateTranslation(F2.Up * Length2) * Matrix.CreateFromAxisAngle(F2.Forward, Angle3);
             //Matrix F3 = F2 * F23;
-            Matrix F3 = F01 * Matrix.CreateFromAxisAngle(F1.Forward, Angle2) * Matrix.CreateFromAxisAngle(F2.Forward, Angle3) * F0.ToMatrix() * Matrix.CreateTranslation(Vector3.Up * Length1) * Matrix.CreateTranslation(F2.Up * Length2); //ok
+            Matrix F3 = F01 * Matrix.CreateFromAxisAngle(F1.Forward, Angle2) * Matrix.CreateFromAxisAngle(F2.Forward, Angle3) * 
+                F0.ToMatrix() * Matrix.CreateTranslation(F1.Up * Length1) * Matrix.CreateTranslation(F2.Up * Length2); //ok
 
-            var F34 = Matrix.CreateTranslation(Vector3.Up * -Length3) * Matrix.CreateFromAxisAngle(F3.Up, Angle4);
+            //var F34 = Matrix.CreateTranslation(Vector3.Up * -Length3) * Matrix.CreateFromAxisAngle(F3.Up, Angle4);
             //Matrix F4 = F3 * F34;
-            Matrix F4 = F01 * Matrix.CreateFromAxisAngle(F1.Forward, Angle2) * Matrix.CreateFromAxisAngle(F2.Forward, Angle3) * Matrix.CreateFromAxisAngle(F3.Up, Angle4) * F0.ToMatrix() * Matrix.CreateTranslation(Vector3.Up * Length1) * Matrix.CreateTranslation(Vector3.Right * Length2) * Matrix.CreateTranslation(Vector3.Up * -Length3);
+            Matrix F4 = F01 * Matrix.CreateFromAxisAngle(F1.Forward, Angle2) * Matrix.CreateFromAxisAngle(F2.Forward, Angle3) *
+                Matrix.CreateFromAxisAngle(F3.Forward, (float)(2 * Math.PI - Math.PI/2)) * Matrix.CreateFromAxisAngle(F3.Up, -Angle4) * 
+                F0.ToMatrix() * Matrix.CreateTranslation(F1.Up * Length1) * Matrix.CreateTranslation(F2.Up * Length2) * Matrix.CreateTranslation(F3.Up * Length3);
 
-            var F45 = Matrix.CreateTranslation(Vector3.Right * Length4) * Matrix.CreateFromAxisAngle(F4.Right, Angle5);
+            //var F45 = Matrix.CreateTranslation(Vector3.Right * Length4) * Matrix.CreateFromAxisAngle(F4.Right, Angle5);
             //Matrix F5 = F4 * F45;
-            Matrix F5= F01 * Matrix.CreateFromAxisAngle(F1.Forward, Angle2) * Matrix.CreateFromAxisAngle(F2.Forward, Angle3) * Matrix.CreateFromAxisAngle(F3.Up, Angle4) * Matrix.CreateFromAxisAngle(F4.Right, Angle5) * F0.ToMatrix() * Matrix.CreateTranslation(Vector3.Up * Length1) * Matrix.CreateTranslation(Vector3.Right * Length2) * Matrix.CreateTranslation(Vector3.Up * -Length3) * Matrix.CreateTranslation(Vector3.Right * Length4);
+            Matrix F5 = F01 * Matrix.CreateFromAxisAngle(F1.Forward, Angle2) * Matrix.CreateFromAxisAngle(F2.Forward, Angle3) *
+                Matrix.CreateFromAxisAngle(F3.Forward, (float)(2 * Math.PI - Math.PI / 2)) * Matrix.CreateFromAxisAngle(F3.Up, -Angle4) * Matrix.CreateFromAxisAngle(F4.Up, Angle5) * 
+                F0.ToMatrix() * Matrix.CreateTranslation(F1.Up * Length1) * Matrix.CreateTranslation(F2.Up * Length2) * Matrix.CreateTranslation(F3.Up * Length3) * Matrix.CreateTranslation(F4.Up * Length4);
 
             Matrix[] result = { F1, F2, F3, F4, F5 };
 
