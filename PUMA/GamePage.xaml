@@ -1,0 +1,91 @@
+﻿<Page
+    x:Class="PUMA.GamePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:PUMA"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <SwapChainPanel x:Name="swapChainPanel1">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <CommandBar Grid.Row="1" IsOpen="True">
+            <CommandBar.Content>
+                <StackPanel Padding="16,4" Orientation="Horizontal">
+                    <TextBlock Text="Start"/>
+                    <StackPanel>
+                        <TextBox x:Name="X0TextBox" Text="{Binding X0, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBlock Text="x"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBox x:Name="Y0TextBox" Text="{Binding Y0, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBlock Text="y"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBox x:Name="Z0TextBox" Text="{Binding Z0, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBlock Text="z"/>
+                    </StackPanel>
+                    <TextBlock Text=" End"/>
+                    <StackPanel>
+                        <TextBox x:Name="X1TextBox" Text="{Binding X1, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBlock Text="x"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBox x:Name="Y1TextBox" Text="{Binding Y1, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBlock Text="y"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBox x:Name="Z1TextBox" Text="{Binding Z1, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBlock Text="z"/>
+                    </StackPanel>
+                    <AppBarSeparator/>
+                    <TextBlock Text="Start"/>
+                    <StackPanel>
+                        <TextBox x:Name="EX0TextBox" Text="{Binding EX0, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBlock Text="x"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBox x:Name="EY0TextBox" Text="{Binding EY0, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBlock Text="y"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBox x:Name="EZ0TextBox" Text="{Binding EZ0, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBlock Text="z"/>
+                    </StackPanel>
+                    <TextBlock Text=" End"/>
+                    <StackPanel>
+                        <TextBox x:Name="EX1TextBox" Text="{Binding EX1, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBlock Text="x"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBox x:Name="EY1TextBox" Text="{Binding EY1, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBlock Text="y"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBox x:Name="EZ1TextBox" Text="{Binding EZ1, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBlock Text="z"/>
+                    </StackPanel>
+                    <AppBarSeparator/>
+                    <StackPanel>
+                        <TextBox x:Name="StepsNumberTextBox" Text="{Binding StepsNumber, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBlock Text="Steps"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBox x:Name="AnimationTimeTextBox" Text="{Binding AnimationTime, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBlock Text="Animation"/>
+                    </StackPanel>
+                </StackPanel>
+            </CommandBar.Content>
+            <CommandBar.PrimaryCommands>
+                <AppBarButton x:Name="ResetButton" Label="Reset" Icon="Next" Click="ResetButton_Click"/>
+                <AppBarToggleButton x:Name="StartPauseAnimationButton" Label="Start/Pause Animation" Checked="StartPauseAnimationButton_Checked"  Unchecked="StartPauseAnimationButton_Unchecked">
+                    <SymbolIcon Symbol="Play"></SymbolIcon>
+                </AppBarToggleButton>
+            </CommandBar.PrimaryCommands>
+        </CommandBar>
+    </SwapChainPanel>
+
+</Page>
