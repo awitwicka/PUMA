@@ -23,7 +23,7 @@ namespace PUMA
         {
             this.device = device;
             x = new Cylinder(device, 2, 0.5f, 16, Color.Red);
-            x.Rotate(0, -90, 0);
+            x.Rotate(0, 0, -90);
             y = new Cylinder(device, 2, 0.5f, 16, Color.Green);
             y.Rotate(90, 0, 0);
             z = new Cylinder(device, 2, 0.5f, 16, Color.Blue);
@@ -57,17 +57,17 @@ namespace PUMA
             this.z.Rotate(rotationVector);
         }
 
-        public void QuanterionRotation(Quaternion quaternion)
+        public void QuaterionRotation(Quaternion quaternion)
         {
-            this.x.QuanterionRotation(quaternion);
-            this.y.QuanterionRotation(quaternion);
-            this.z.QuanterionRotation(quaternion);
+            this.x.QuaterionRotation(quaternion);
+            this.y.QuaterionRotation(quaternion);
+            this.z.QuaterionRotation(quaternion);
         }
 
         public void Reset()
         {
             x.Reset();
-            x.Rotate(0, -90, 0);
+            x.Rotate(0, 0, -90);
             y.Reset();
             y.Rotate(90, 0, 0);
             z.Reset();

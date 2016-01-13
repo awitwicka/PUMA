@@ -44,35 +44,39 @@
                     <AppBarSeparator/>
                     <TextBlock Text="Start"/>
                     <StackPanel>
-                        <TextBox x:Name="EX0TextBox" Text="{Binding EX0, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBox x:Name="QX0TextBox" Text="{Binding QX0, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
                         <TextBlock Text="x"/>
                     </StackPanel>
                     <StackPanel>
-                        <TextBox x:Name="EY0TextBox" Text="{Binding EY0, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBox x:Name="QY0TextBox" Text="{Binding QY0, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
                         <TextBlock Text="y"/>
                     </StackPanel>
                     <StackPanel>
-                        <TextBox x:Name="EZ0TextBox" Text="{Binding EZ0, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBox x:Name="QZ0TextBox" Text="{Binding QZ0, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
                         <TextBlock Text="z"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBox x:Name="QW0TextBox" Text="{Binding QW0, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBlock Text="w"/>
                     </StackPanel>
                     <TextBlock Text=" End"/>
                     <StackPanel>
-                        <TextBox x:Name="EX1TextBox" Text="{Binding EX1, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBox x:Name="QX1TextBox" Text="{Binding QX1, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
                         <TextBlock Text="x"/>
                     </StackPanel>
                     <StackPanel>
-                        <TextBox x:Name="EY1TextBox" Text="{Binding EY1, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBox x:Name="QY1TextBox" Text="{Binding QY1, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
                         <TextBlock Text="y"/>
                     </StackPanel>
                     <StackPanel>
-                        <TextBox x:Name="EZ1TextBox" Text="{Binding EZ1, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBox x:Name="QZ1TextBox" Text="{Binding QZ1, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
+                        <TextBlock Text="z"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <TextBox x:Name="QW1TextBox" Text="{Binding QW1, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
                         <TextBlock Text="z"/>
                     </StackPanel>
                     <AppBarSeparator/>
-                    <StackPanel>
-                        <TextBox x:Name="StepsNumberTextBox" Text="{Binding StepsNumber, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
-                        <TextBlock Text="Steps"/>
-                    </StackPanel>
                     <StackPanel>
                         <TextBox x:Name="AnimationTimeTextBox" Text="{Binding AnimationTime, Mode=TwoWay}" Margin="10,0,0,0" Height="40" />
                         <TextBlock Text="Animation"/>

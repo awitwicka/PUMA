@@ -11,54 +11,51 @@ namespace PUMA
     public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
-        public bool IsAnimated = false;
-
-        private Vector3 position0 = new Vector3(-1, -1, -1);
-        private Vector3 position1 = new Vector3(10, 10, 10);
-        private Vector3 eulerRotation0 = new Vector3(0, 0, 0);
-        private Vector3 eulerRotation1 = new Vector3(0, 0, 0);
-
-        #region interface
-        private int stepsNumber = 0;
-        public int StepsNumber { get { return stepsNumber; } set { stepsNumber = value; ResetInterpolationsSteps(); } }
-        private float animationTime = 10;
-        public float AnimationTime { get { return animationTime; } set { animationTime = value; ResetScene(); } }
-
-        public float X0 { get { return position0.X; } set { position0.X = value; ResetScene(); } }
-        public float Y0 { get { return position0.Y; } set { position0.Y = value; ResetScene(); } }
-        public float Z0 { get { return position0.Z; } set { position0.Z = value; ResetScene(); } }
-        public float X1 { get { return position1.X; } set { position1.X = value; ResetScene(); } }
-        public float Y1 { get { return position1.Y; } set { position1.Y = value; ResetScene(); } }
-        public float Z1 { get { return position1.Z; } set { position1.Z = value; ResetScene(); } }
-
-        public float EX0 { get { return eulerRotation0.X; } set { eulerRotation0.X = value; ResetScene(); } }
-        public float EY0 { get { return eulerRotation0.Y; } set { eulerRotation0.Y = value; ResetScene(); } }
-        public float EZ0 { get { return eulerRotation0.Z; } set { eulerRotation0.Z = value; ResetScene(); } }
-        public float EX1 { get { return eulerRotation1.X; } set { eulerRotation1.X = value; ResetScene(); } }
-        public float EY1 { get { return eulerRotation1.Y; } set { eulerRotation1.Y = value; ResetScene(); } }
-        public float EZ1 { get { return eulerRotation1.Z; } set { eulerRotation1.Z = value; ResetScene(); } }
-        #endregion
+        public bool IsAnimated;
         public Puma Puma1;
-        public QuaternionLinear QuaternionLinInterpolation;
-        private Quaternion Rotation0;
-        private Quaternion Rotation1;
-
         private BasicEffect effect;
         private BasicEffect wireframeEffect;
         private ArcBallCamera camera;
+        private List<Axis> PositionAxis = new List<Axis>();
         private List<VertexPositionColor> GlobalAxisVertices = new List<VertexPositionColor>();
         private List<short> GlobalAxisIndices = new List<short>();
         private double timeElapsedFromAnimationStart = 0;
 
+        private Vector3 position0 = new Vector3(-1, -1, -1);
+        private Vector3 position1 = new Vector3(10, 10, 10);
+        private Quaternion quaternionRotation0 = new Quaternion(2, 1, 0, 90);
+        private Quaternion quaternionRotation1 = new Quaternion(0, 3, 8, 180);
+
+        #region interface
+        private float animationTime = 10;
+        public float AnimationTime { get { return animationTime; } set { animationTime = value; ResetScene(); } }
+
+        public float X0 { get { return position0.X; } set { position0.X = value; ResetScene(); } }
+        public float Y0 { get { return position0.Z; } set { position0.Z = value; ResetScene(); } }
+        public float Z0 { get { return position0.Y; } set { position0.Y = value; ResetScene(); } }
+        public float X1 { get { return position1.X; } set { position1.X = value; ResetScene(); } }
+        public float Y1 { get { return position1.Z; } set { position1.Z = value; ResetScene(); } }
+        public float Z1 { get { return position1.Y; } set { position1.Y = value; ResetScene(); } }
+        //TODO: check direction of rotation if corresponds to puma axis
+        public float QX0 { get { return quaternionRotation0.X; } set { quaternionRotation0.X = value; ResetScene(); } }
+        public float QY0 { get { return quaternionRotation0.Z; } set { quaternionRotation0.Z = value; ResetScene(); } }
+        public float QZ0 { get { return quaternionRotation0.Y; } set { quaternionRotation0.Y = value; ResetScene(); } }
+        public float QW0 { get { return quaternionRotation0.W; } set { quaternionRotation0.W = value; ResetScene(); } }
+        public float QX1 { get { return quaternionRotation1.X; } set { quaternionRotation1.X = value; ResetScene(); } }
+        public float QY1 { get { return quaternionRotation1.Z; } set { quaternionRotation1.Z = value; ResetScene(); } }
+        public float QZ1 { get { return quaternionRotation1.Y; } set { quaternionRotation1.Y = value; ResetScene(); } }
+        public float QW1 { get { return quaternionRotation1.W; } set { quaternionRotation1.W = value; ResetScene(); } }
+        #endregion
+
         //camera control
         private float scrollRate = 1.0f;
         private MouseState previousMouse;
-
-        Viewport defaultViewport;
-        Viewport leftViewport;
-        Viewport rightViewport;
-        Matrix projectionMatrix;
-        Matrix halfprojectionMatrix;
+        //viewports
+        private Viewport defaultViewport;
+        private Viewport leftViewport;
+        private Viewport rightViewport;
+        private Matrix projectionMatrix;
+        private Matrix halfprojectionMatrix;
 
         public Game1()
         {
@@ -70,18 +67,18 @@ namespace PUMA
         protected override void Initialize()
         {
             this.IsMouseVisible = true;
-
-            //todo check if not in constructor
             effect = new BasicEffect(graphics.GraphicsDevice);
             wireframeEffect = new BasicEffect(graphics.GraphicsDevice);
             camera = new ArcBallCamera(new Vector3(0f, 0f, 0f), MathHelper.ToRadians(-200), 0f, 10f, 300f, 50f, GraphicsDevice.Viewport.AspectRatio, 0.1f, 512f);
             Puma1 = new Puma(graphics.GraphicsDevice, 2, 2, 2, 2);
             InitializeGlobalAxis(4);
+            InitializePositionAxis();
 
             base.Initialize();
         }
         private void InitializeGlobalAxis(int size)
         {
+            //Global axis
             //x
             GlobalAxisVertices.Add(new VertexPositionColor(new Vector3(size, 0, 0), Color.Red));
             GlobalAxisVertices.Add(new VertexPositionColor(new Vector3(0, 0, 0), Color.Red));
@@ -97,14 +94,33 @@ namespace PUMA
                 GlobalAxisIndices.Add((short)i);
             }
         }
+        private void InitializePositionAxis()
+        {
+            var q = quaternionRotation0;
+            q.W = MathHelper.ToRadians(q.W);
+
+            //start / end position axis
+            Axis Axe0 = new Axis(graphics.GraphicsDevice);
+            Axe0.QuaterionRotation(Quaternion.Normalize(q));
+            Axe0.Translate(position0);
+            PositionAxis.Add(Axe0);
+
+            q = quaternionRotation1;
+            q.W = MathHelper.ToRadians(q.W);
+
+            Axis Axe1 = new Axis(graphics.GraphicsDevice);
+            Axe1.QuaterionRotation(Quaternion.Normalize(q));
+            Axe1.Translate(position1);
+            PositionAxis.Add(Axe1);
+        }
+        public void ResetScene()
+        {
+            PositionAxis.Clear();
+            InitializePositionAxis();
+            timeElapsedFromAnimationStart = 0;
+        }
         protected override void LoadContent()
         {
-            Rotation0 = Utility.EulerToQuaternion(MathHelper.ToRadians(-eulerRotation0.Z), MathHelper.ToRadians(eulerRotation0.Y), MathHelper.ToRadians(-eulerRotation0.X));
-            Rotation1 = Utility.EulerToQuaternion(MathHelper.ToRadians(-eulerRotation1.Z), MathHelper.ToRadians(eulerRotation1.Y), MathHelper.ToRadians(-eulerRotation1.X));
-            //Rotation0 = Utility.EulerToQuaternion(MathHelper.ToRadians(eulerRotation0.X), MathHelper.ToRadians(eulerRotation0.Y), MathHelper.ToRadians(eulerRotation0.Z));
-            //Rotation1 = Utility.EulerToQuaternion(MathHelper.ToRadians(eulerRotation1.X), MathHelper.ToRadians(eulerRotation1.Y), MathHelper.ToRadians(eulerRotation1.Z));
-            QuaternionLinInterpolation = new QuaternionLinear(graphics.GraphicsDevice, position0, position1, Rotation0, Rotation1);
-
             defaultViewport = GraphicsDevice.Viewport;
             leftViewport = defaultViewport;
             rightViewport = defaultViewport;
@@ -124,19 +140,19 @@ namespace PUMA
             KeyboardState keyState = Keyboard.GetState();
 
             //CAMERA
-            if (keyState.IsKeyDown(Keys.W))
+            if (keyState.IsKeyDown(Keys.Up))
             {
                 camera.Elevation -= MathHelper.ToRadians(2);
             }
-            if (keyState.IsKeyDown(Keys.S))
+            if (keyState.IsKeyDown(Keys.Down))
             {
                 camera.Elevation += MathHelper.ToRadians(2);
             }
-            if (keyState.IsKeyDown(Keys.A))
+            if (keyState.IsKeyDown(Keys.Left))
             {
                 camera.Rotation -= MathHelper.ToRadians(2);
             }
-            if (keyState.IsKeyDown(Keys.D))
+            if (keyState.IsKeyDown(Keys.Right))
             {
                 camera.Rotation += MathHelper.ToRadians(2);
             }
@@ -149,23 +165,6 @@ namespace PUMA
             base.Update(gameTime);
         }
 
-        public void ResetScene()
-        {
-            Rotation0 = Utility.EulerToQuaternion(MathHelper.ToRadians(-eulerRotation0.Z), MathHelper.ToRadians(eulerRotation0.Y), MathHelper.ToRadians(-eulerRotation0.X));
-            Rotation1 = Utility.EulerToQuaternion(MathHelper.ToRadians(-eulerRotation1.Z), MathHelper.ToRadians(eulerRotation1.Y), MathHelper.ToRadians(-eulerRotation1.X));
-            //Rotation0 = Utility.EulerToQuaternion(MathHelper.ToRadians(eulerRotation0.X), MathHelper.ToRadians(eulerRotation0.Y), MathHelper.ToRadians(eulerRotation0.Z));
-            //Rotation1 = Utility.EulerToQuaternion(MathHelper.ToRadians(eulerRotation1.X), MathHelper.ToRadians(eulerRotation1.Y), MathHelper.ToRadians(eulerRotation1.Z));
-            //TODO: check if should not unload and then load content again
-
-            QuaternionLinInterpolation = new QuaternionLinear(graphics.GraphicsDevice, position0, position1, Rotation0, Rotation1);
-
-            timeElapsedFromAnimationStart = 0;
-            ResetInterpolationsSteps();
-        }
-        private void ResetInterpolationsSteps()
-        {
-            QuaternionLinInterpolation.ResetSteps(StepsNumber);
-        }
         private void DrawAxis(ArcBallCamera camera, Effect wireframeEffect)
         {
             foreach (EffectPass pass in wireframeEffect.CurrentTechnique.Passes)
@@ -174,7 +173,6 @@ namespace PUMA
                 graphics.GraphicsDevice.DrawUserIndexedPrimitives<VertexPositionColor>(PrimitiveType.LineList, GlobalAxisVertices.ToArray(), 0, GlobalAxisVertices.Count, GlobalAxisIndices.ToArray(), 0, GlobalAxisIndices.Count / 2);
             }
         }
-
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.LightGray);
@@ -197,13 +195,16 @@ namespace PUMA
             //LEFT VIEWPORT
             GraphicsDevice.Viewport = leftViewport;
             DrawAxis(camera, wireframeEffect);
+            foreach (var a in PositionAxis)
+                a.Draw(effect);
             Puma1.DrawStage(camera, effect);
 
             //RIGHT VIEWPORT
             GraphicsDevice.Viewport = rightViewport;
             DrawAxis(camera, wireframeEffect);
-            //QuaternionLinInterpolation.Draw(camera, effect, wireframeEffect, timeElapsedFromAnimationStart, AnimationTime, IsAnimated);
-            //QuaternionLinInterpolation.DrawStages(camera, effect, wireframeEffect);
+            foreach (var a in PositionAxis)
+                a.Draw(effect);
+
             base.Draw(gameTime);
         }
     }

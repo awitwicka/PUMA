@@ -15,7 +15,6 @@ namespace PUMA
         List<short> indices = new List<short>();
         Color color;
 
-
         public Cylinder(GraphicsDevice graphicsDevice) : this(graphicsDevice, 2, 1, 32, Color.Blue) { }
         public Cylinder(GraphicsDevice graphicsDevice, float height, float diameter, int tessellation, Color color)
         {
@@ -100,7 +99,7 @@ namespace PUMA
 
         public void Translate(Vector3 translationVector)
         {
-            var translation = Matrix.CreateTranslation(translationVector.X, translationVector.Z, translationVector.Y);
+            var translation = Matrix.CreateTranslation(translationVector.X, translationVector.Y, translationVector.Z);
             for (int i = 0; i < vertices.Count; i++)
             {
                 var v = vertices[i].Position;
@@ -125,7 +124,7 @@ namespace PUMA
         //in deg
         public void Rotate(float x, float y, float z)
         {
-            var rotation = Matrix.CreateRotationX(MathHelper.ToRadians(x)) * Matrix.CreateRotationY(MathHelper.ToRadians(z)) * Matrix.CreateRotationZ(MathHelper.ToRadians(y));
+            var rotation = Matrix.CreateRotationX(MathHelper.ToRadians(x)) * Matrix.CreateRotationY(MathHelper.ToRadians(y)) * Matrix.CreateRotationZ(MathHelper.ToRadians(z));
             for (int i = 0; i < vertices.Count; i++)
             {
                 var v = vertices[i].Position;
@@ -153,9 +152,9 @@ namespace PUMA
             //    rotationVector.Z = -180 - rotationVector.Z;
 
             var rotation =
-                Matrix.CreateRotationZ(MathHelper.ToRadians(-rotationVector.Y))
-                * Matrix.CreateRotationY(MathHelper.ToRadians(rotationVector.Z))
-                * Matrix.CreateRotationX(MathHelper.ToRadians(rotationVector.X));
+                Matrix.CreateRotationX(MathHelper.ToRadians(rotationVector.X))
+                * Matrix.CreateRotationY(MathHelper.ToRadians(rotationVector.Y))
+                * Matrix.CreateRotationZ(MathHelper.ToRadians(rotationVector.Z));
             for (int i = 0; i < vertices.Count; i++)
             {
                 var v = vertices[i].Position;
@@ -166,14 +165,14 @@ namespace PUMA
             }
         }
 
-        public void QuanterionRotation(Quaternion quaternion)
+        public void QuaterionRotation(Quaternion quaternion)
         {
             //change z with y to correct display in xna
             //double z = quaternion.Z;
             //quaternion.Z = -quaternion.Y;
             //quaternion.Y = z;
 
-            var rotation = quaternion.ToMatrix();
+            var rotation = Matrix.CreateFromQuaternion(quaternion);
             for (int i = 0; i < vertices.Count; i++)
             {
                 var v = vertices[i].Position;
