@@ -11,7 +11,7 @@ namespace PUMA
     public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
-        public bool IsAnimated;
+        public bool IsAnimated = true;
         public Puma Puma1;
         private BasicEffect effect;
         private BasicEffect wireframeEffect;
@@ -197,7 +197,8 @@ namespace PUMA
             DrawAxis(camera, wireframeEffect);
             foreach (var a in PositionAxis)
                 a.Draw(effect);
-            Puma1.DrawStage(camera, effect);
+            //Puma1.DrawStage(effect);
+            Puma1.DrawAngleLinInterpolationSimulation(position0, position1, quaternionRotation0, quaternionRotation1, (float)timeElapsedFromAnimationStart, AnimationTime, effect);
 
             //RIGHT VIEWPORT
             GraphicsDevice.Viewport = rightViewport;
