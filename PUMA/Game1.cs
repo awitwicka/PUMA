@@ -23,8 +23,8 @@ namespace PUMA
 
         private Vector3 position0 = new Vector3(-1, -1, -1);
         private Vector3 position1 = new Vector3(10, 10, 10);
-        private Quaternion quaternionRotation0 = new Quaternion(2, 1, 0, 90);
-        private Quaternion quaternionRotation1 = new Quaternion(0, 3, 8, 180);
+        private Quaternion quaternionRotation0 = new Quaternion(1, 0, 0, 30);
+        private Quaternion quaternionRotation1 = new Quaternion(0, 0, 1, 180);
 
         #region interface
         private float animationTime = 10;
@@ -192,19 +192,25 @@ namespace PUMA
             if (IsAnimated)
                 timeElapsedFromAnimationStart += gameTime.ElapsedGameTime.TotalMilliseconds;
 
+            var q0 = quaternionRotation0;
+            q0.W = MathHelper.ToRadians(q0.W);
+            var q1 = quaternionRotation1;
+            q1.W = MathHelper.ToRadians(q1.W);
+
             //LEFT VIEWPORT
             GraphicsDevice.Viewport = leftViewport;
             DrawAxis(camera, wireframeEffect);
             foreach (var a in PositionAxis)
                 a.Draw(effect);
             //Puma1.DrawStage(effect);
-            Puma1.DrawAngleLinInterpolationSimulation(position0, position1, quaternionRotation0, quaternionRotation1, (float)timeElapsedFromAnimationStart, AnimationTime, effect);
+            Puma1.DrawAngleLinInterpolationSimulation(position0, position1, q0, q1, (float)timeElapsedFromAnimationStart, AnimationTime, effect);
 
             //RIGHT VIEWPORT
             GraphicsDevice.Viewport = rightViewport;
             DrawAxis(camera, wireframeEffect);
             foreach (var a in PositionAxis)
                 a.Draw(effect);
+            Puma1.DrawPositionCalcSphericalSimulation(position0, position1, q0, q1, (float)timeElapsedFromAnimationStart, AnimationTime, effect);
 
             base.Draw(gameTime);
         }

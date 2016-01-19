@@ -62,8 +62,12 @@ namespace PUMA
             L4 = new Cylinder(device, Length4, 0.5f, 16, Color.Green);
             L5 = new Cylinder(device, Length5, 0.2f, 16, Color.Green);
             
-            SetPositionsOfArms(StartConfiguration);
-            var angles = CalculateAnglesFromEndPosition(new ArmOrientation(new Vector3(1, 0, 0), new Vector3(0, 1, 0), new Vector3(0, 0, 1), new Vector3(4, 0, 4))); //everything -4 in z????
+            //SetPositionsOfArms(StartConfiguration);
+            var angles = CalculateAnglesFromEndPosition(new ArmOrientation(
+                Vector3.Normalize(new Vector3(0.14f, 1.044f, -1.2f)), 
+                Vector3.Normalize(new Vector3(-0.14f, 1.044f, 1.2f)), 
+                Vector3.Normalize(new Vector3(0.14f, -1.044f, 1.2f)), 
+                new Vector3(10, 10, 10))); //everything -4 in z????
             SetPositionsOfArms(angles);
         }
 
@@ -148,23 +152,45 @@ namespace PUMA
             endOrientation.Position.Z *= -1;
             Configuration angles = new Configuration();
 
-            angles.Angle1 = (float)Math.Atan((endOrientation.Position.Z - Length4 * endOrientation.AlphaX.Z) / (endOrientation.Position.X - Length4 * endOrientation.AlphaX.X)); //2 sol
+            float angle1a = (float)Math.Atan((endOrientation.Position.Z - Length4 * endOrientation.AlphaX.Z) / (endOrientation.Position.X - Length4 * endOrientation.AlphaX.X));
+            //float angle1b = ((angle1a < 0)? angle1a + (float)Math.PI : angle1a - (float)Math.PI);
+            angles.Angle1 = angle1a;
             angles.Angle4 = (float)Math.Asin(Math.Cos(angles.Angle1) * endOrientation.AlphaX.Z - Math.Sin(angles.Angle1) * endOrientation.AlphaX.X); //1 or 2 sol for given a1
-
+            /********* angle 5 ***********/
             var Angle5a = (float)Math.Acos((Math.Cos(angles.Angle1) * endOrientation.AlphaZ.Z - Math.Sin(angles.Angle1) * endOrientation.AlphaZ.X) / (Math.Cos(angles.Angle4))); //uniq
-                                                                                                                                                            /*var Angle5b*/
-            angles.Angle5 = (float)Math.Asin((Math.Sin(angles.Angle1) * endOrientation.AlphaY.X - Math.Cos(angles.Angle1) * endOrientation.AlphaY.Z) / (Math.Cos(angles.Angle4)));
-
+            float angle5a2 = ((Angle5a < 0) ? Angle5a + (float)Math.PI : Angle5a - (float)Math.PI);
+            var Angle5b = (float)Math.Asin((Math.Sin(angles.Angle1) * endOrientation.AlphaY.X - Math.Cos(angles.Angle1) * endOrientation.AlphaY.Z) / (Math.Cos(angles.Angle4)));
+            float angle5b2 = ((Angle5a < 0) ? Angle5b + (float)Math.PI : Angle5b - (float)Math.PI);
+            if (Math.Round(Angle5a,2) == Math.Round(Angle5b,2))
+                angles.Angle5 = Angle5a;
+            else if (Math.Round(angle5a2) == Math.Round(angle5b2))
+                angles.Angle5 = angle5b2;
+            else if (Math.Round(Angle5a) == Math.Round(angle5b2))
+                angles.Angle5 = angle5b2;
+            else if (Math.Round(Angle5b) == Math.Round(angle5a2))
+                angles.Angle5 = angle5a2;
+            //angles.Angle5 = (float)Math.Asin((Math.Sin(angles.Angle1) * endOrientation.AlphaY.X - Math.Cos(angles.Angle1) * endOrientation.AlphaY.Z) / (Math.Cos(angles.Angle4)));
+            /********* angle 5 ***********/
             angles.Angle2 = (float)Math.Atan(-(Math.Cos(angles.Angle1) * Math.Cos(angles.Angle4) * (endOrientation.Position.Y - Length4 * endOrientation.AlphaX.Y - Length1) + Length3 * (endOrientation.AlphaX.X + Math.Sin(angles.Angle1) * Math.Sin(angles.Angle4)))// 2 sol
                 / (Math.Cos(angles.Angle4) * (endOrientation.Position.X - Length4 * endOrientation.AlphaX.X) - Math.Cos(angles.Angle1) * Length3 * endOrientation.AlphaX.Y));
             angles.Length2 = (float)((Math.Cos(angles.Angle4) * (endOrientation.Position.X - Length4 * endOrientation.AlphaX.X) - Math.Cos(angles.Angle1) * Length3 * endOrientation.AlphaX.Y)
                 / (Math.Cos(angles.Angle1) * Math.Cos(angles.Angle2) * Math.Cos(angles.Angle4)));
 
             var Angle3a = (float)Math.Acos((endOrientation.AlphaX.X + Math.Sin(angles.Angle1) * Math.Sin(angles.Angle4)) / (Math.Cos(angles.Angle1) * Math.Cos(angles.Angle4))) - angles.Angle2; //uniq
+            //float angle3a2 = ((Angle3a < 0) ? Angle3a + (float)Math.PI : Angle3a - (float)Math.PI);
             /*var Angle3b*/
             angles.Angle3 = (float)Math.Asin(-endOrientation.AlphaX.Y / Math.Cos(angles.Angle4)) - angles.Angle2;
-
-
+            //float angle3b2 = ((Angle3b < 0) ? Angle3b + (float)Math.PI : Angle3b - (float)Math.PI);
+            /***/
+            //if (Math.Round(Angle3a, 2) == Math.Round(Angle3b, 2))
+            //    angles.Angle3 = Angle3a;
+            //else if (Math.Round(angle3a2) == Math.Round(angle3b2))
+            //    angles.Angle3 = angle3b2;
+            //else if (Math.Round(Angle3a) == Math.Round(angle3b2))
+            //    angles.Angle3 = angle3b2;
+            //else if (Math.Round(Angle3b) == Math.Round(angle3a2))
+            //    angles.Angle3 = angle3a2;
+            /***/
             angles.Angle2 += (float)Math.PI / 2;
             Angle3a += (float)Math.PI / 2;
             angles.Angle3 += (float)Math.PI / 2;
@@ -178,25 +204,37 @@ namespace PUMA
             endRot = Quaternion.Normalize(endRot);
             var startTransform = Matrix.CreateFromQuaternion(startRot);
             var endTransform = Matrix.CreateFromQuaternion(endRot);
-            var x0 = startTransform.Right;
-            var y0 = startTransform.Up;
-            var z0 = startTransform.Backward;
-            var x1 = endTransform.Right;
-            var y1 = endTransform.Up;
-            var z1 = endTransform.Backward;
+            var x0 = Vector3.Transform(Vector3.Right, startTransform);
+            var y0 = Vector3.Transform(Vector3.Up, startTransform);
+            var z0 = Vector3.Transform(Vector3.Backward, startTransform);
+            var x1 = Vector3.Transform(Vector3.Right, endTransform);
+            var y1 = Vector3.Transform(Vector3.Up, endTransform);
+            var z1 = Vector3.Transform(Vector3.Backward, endTransform);
             var anglesStart = CalculateAnglesFromEndPosition(new ArmOrientation(x0, y0, z0, startPos));
+            //var nextPos = (1 - elapsedTime) * startPos + elapsedTime * endPos;
             var anglesEnd = CalculateAnglesFromEndPosition(new ArmOrientation(x1, y1, z1, endPos));
             var angleNext = new Configuration();
 
-            //var nextPos = (1 - elapsedTime) * startPos + elapsedTime * endPos;
             angleNext.Angle1 = anglesStart.Angle1 * (1 - elapsedTime) + anglesEnd.Angle1 * elapsedTime;
             angleNext.Angle2 = anglesStart.Angle2 * (1 - elapsedTime) + anglesEnd.Angle2 * elapsedTime;
             angleNext.Length2 = anglesStart.Length2 * (1 - elapsedTime) + anglesEnd.Length2 * elapsedTime;
             angleNext.Angle3 = anglesStart.Angle3 * (1 - elapsedTime) + anglesEnd.Angle3 * elapsedTime;
             angleNext.Angle4 = anglesStart.Angle4 * (1 - elapsedTime) + anglesEnd.Angle4 * elapsedTime;
             angleNext.Angle5 = anglesStart.Angle5 * (1 - elapsedTime) + anglesEnd.Angle5 * elapsedTime;
-
             SetPositionsOfArms(angleNext);
+        }
+        private void NextStepQuaternionSpherInterpolation(Vector3 startPos, Vector3 endPos, Quaternion startRot, Quaternion endRot, float elapsedTime)
+        {
+            startRot = Quaternion.Normalize(startRot);
+            endRot = Quaternion.Normalize(endRot);
+            var transformation = Matrix.CreateFromQuaternion(Quaternion.Slerp(startRot, endRot, elapsedTime));
+            var x = Vector3.Transform(Vector3.Right, transformation); //transformation.Right;
+            var y = Vector3.Transform(Vector3.Up, transformation); //transformation.Up;
+            var z = Vector3.Transform(Vector3.Backward, transformation); //transformation.Backward;
+
+            var nextPos = (1 - elapsedTime) * startPos + elapsedTime * endPos;
+            var nextAngles = CalculateAnglesFromEndPosition(new ArmOrientation(x, y, z, nextPos));
+            SetPositionsOfArms(nextAngles);
         }
         /// <summary>
         /// Calculates angles set up for start and end position of PUMA, then interpolates linearly all angles from start position till end position;
@@ -211,9 +249,12 @@ namespace PUMA
         /// <summary>
         /// Calculates angles set up for every position on the way, than interpolates rotation of the last segment of an arm with spherical Quaternion interpolation; 
         /// </summary>
-        public void DrawPositionCalcSphericalSimulation()
+        public void DrawPositionCalcSphericalSimulation(Vector3 startPos, Vector3 endPos, Quaternion startRot, Quaternion endRot, float elapsedTime, float totalAnimationTime, BasicEffect effect)
         {
-
+            totalAnimationTime *= 1000;
+            if (elapsedTime <= totalAnimationTime)
+                NextStepQuaternionSpherInterpolation(startPos, endPos, startRot, endRot, elapsedTime / totalAnimationTime);
+            DrawStage(effect);
         }
         public void DrawStage(BasicEffect effect)
         {
