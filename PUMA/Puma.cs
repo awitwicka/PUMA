@@ -157,6 +157,7 @@ namespace PUMA
             endOrientation.Position.Z *= -1;
             Configuration angles = new Configuration();
 
+
             /******* angle 1 & 4 **********/
 
             angles.Angle1 = (float)Math.Atan2(endOrientation.Position.Z - Length4 * endOrientation.AlphaX.Z, endOrientation.Position.X - Length4 * endOrientation.AlphaX.X);
@@ -168,7 +169,10 @@ namespace PUMA
 
             /********* angle 5 ***********/
 
-            var Angle5a = (float)Math.Acos((Math.Cos(angles.Angle1) * endOrientation.AlphaZ.Z - Math.Sin(angles.Angle1) * endOrientation.AlphaZ.X) / (Math.Cos(angles.Angle4))); //uniq
+            var aCos = (Math.Cos(angles.Angle1) * endOrientation.AlphaZ.Z - Math.Sin(angles.Angle1) * endOrientation.AlphaZ.X) / (Math.Cos(angles.Angle4));
+            if (aCos > 1) aCos = 1;
+            if (aCos < -1) aCos = -1;
+            var Angle5a = (float)Math.Acos(aCos); //uniq
             float angle5a2 = -Angle5a;
             var Angle5b = (float)Math.Asin((Math.Sin(angles.Angle1) * endOrientation.AlphaY.X - Math.Cos(angles.Angle1) * endOrientation.AlphaY.Z) / (Math.Cos(angles.Angle4)));
             float angle5b2 = ((Angle5b > 0) ? (float)Math.PI - Angle5b : -(float)Math.PI - Angle5b);
@@ -187,8 +191,7 @@ namespace PUMA
                 else
                     angles.Angle5 = angle5a2;
             }
-            if (float.IsNaN(angles.Angle5) || float.IsInfinity(angles.Angle5)) //take second option (-180) from Asin
-                angles.Angle5 = -(float)Math.PI;
+
 
             /********* angle 2 and length ***********/
 
@@ -202,7 +205,10 @@ namespace PUMA
             /********* anglee 3 *******************/
 
             float angle23;
-            var angle23Cos = (float)Math.Acos((endOrientation.AlphaX.X + (Math.Sin(angles.Angle1) * Math.Sin(angles.Angle4))) / (Math.Cos(angles.Angle1) * Math.Cos(angles.Angle4)));
+            aCos = (endOrientation.AlphaX.X + (Math.Sin(angles.Angle1) * Math.Sin(angles.Angle4))) / (Math.Cos(angles.Angle1) * Math.Cos(angles.Angle4));
+            if (aCos > 1) aCos = 1;
+            if (aCos < -1) aCos = -1; 
+            var angle23Cos = (float)Math.Acos(aCos);
             var angle23Cos2 = -angle23Cos;
             var angle23Sin = (float)Math.Asin(-(endOrientation.AlphaX.Y) / Math.Cos(angles.Angle4));
             var angle23Sin2 = (angle23Sin > 0) ? (float)Math.PI - angle23Sin : -(float)Math.PI - angle23Sin;
@@ -221,8 +227,6 @@ namespace PUMA
                 else
                     angle23 = angle23Cos2;
             }
-            if (float.IsNaN(angle23) || float.IsInfinity(angle23))
-                angle23 = -(float)Math.PI; 
 
             angles.Angle3 = angle23 - angles.Angle2;
 
@@ -237,17 +241,17 @@ namespace PUMA
             angles.Angle3 += (float)Math.PI / 2;
             
             //range check
-            /*if (angles.Angle1 <= -(float)Math.PI) angles.Angle2 += 2 * (float)Math.PI;
+            if (angles.Angle1 <= -(float)Math.PI) angles.Angle2 += 2 * (float)Math.PI;
             if (angles.Angle2 <= -(float)Math.PI) angles.Angle2 += 2 * (float)Math.PI;
             if (angles.Angle3 <= -(float)Math.PI) angles.Angle2 += 2 * (float)Math.PI;
             if (angles.Angle4 <= -(float)Math.PI) angles.Angle2 += 2 * (float)Math.PI;
             if (angles.Angle5 <= -(float)Math.PI) angles.Angle2 += 2 * (float)Math.PI;
 
-            if (angles.Angle1 >= (float)Math.PI) angles.Angle2 -= 2 * (float)Math.PI;
-            if (angles.Angle2 >= (float)Math.PI) angles.Angle2 -= 2 * (float)Math.PI;
-            if (angles.Angle3 >= (float)Math.PI) angles.Angle2 -= 2 * (float)Math.PI;
-            if (angles.Angle4 >= (float)Math.PI) angles.Angle2 -= 2 * (float)Math.PI;
-            if (angles.Angle5 >= (float)Math.PI) angles.Angle2 -= 2 * (float)Math.PI;*/
+            if (angles.Angle1 > (float)Math.PI) angles.Angle2 -= 2 * (float)Math.PI;
+            if (angles.Angle2 > (float)Math.PI) angles.Angle2 -= 2 * (float)Math.PI;
+            if (angles.Angle3 > (float)Math.PI) angles.Angle2 -= 2 * (float)Math.PI;
+            if (angles.Angle4 > (float)Math.PI) angles.Angle2 -= 2 * (float)Math.PI;
+            if (angles.Angle5 > (float)Math.PI) angles.Angle2 -= 2 * (float)Math.PI;
 
             return angles;
         }
