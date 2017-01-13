@@ -137,30 +137,20 @@ namespace PUMA
 
         public void Rotate(Vector3 rotationVector)
         {
-            //if (rotationVector.Y > 90)
-            //    rotationVector.Y = 180 - rotationVector.Y;
-            //if (rotationVector.X > 90)
-            //    rotationVector.X = 180 - rotationVector.X;
-            //if (rotationVector.Z > 90)
-            //    rotationVector.Z = 180 - rotationVector.Z;
-
-            //if (rotationVector.Y < -90)
-            //    rotationVector.Y = -180 - rotationVector.Y;
-            //if (rotationVector.X < -90)
-            //    rotationVector.X = -180 - rotationVector.X;
-            //if (rotationVector.Z < -90)
-            //    rotationVector.Z = -180 - rotationVector.Z;
+            float a = MathHelper.ToRadians(rotationVector.X);
+            float b = MathHelper.ToRadians(rotationVector.Y);
+            float c = MathHelper.ToRadians(rotationVector.Z);
 
             var rotation =
-                Matrix.CreateRotationX(MathHelper.ToRadians(rotationVector.X))
-                * Matrix.CreateRotationY(MathHelper.ToRadians(rotationVector.Y))
-                * Matrix.CreateRotationZ(MathHelper.ToRadians(rotationVector.Z));
+                Matrix.CreateRotationY(MathHelper.ToRadians(-rotationVector.X))
+                * Matrix.CreateRotationZ(MathHelper.ToRadians(-rotationVector.Y))
+                * Matrix.CreateRotationX(MathHelper.ToRadians(-rotationVector.Z));
             for (int i = 0; i < vertices.Count; i++)
             {
                 var v = vertices[i].Position;
-                var c = vertices[i].Color;
+                var col = vertices[i].Color;
                 var n = vertices[i].Normal;
-                vertices[i] = new VertexPositionColorNormal(Vector3.Transform(v, rotation), c, n);
+                vertices[i] = new VertexPositionColorNormal(Vector3.Transform(v, rotation), col, n);
                 //vertices[i].SetNewPosition(Vector3.Transform(v, rotation));
             }
         }
@@ -171,8 +161,12 @@ namespace PUMA
             //double z = quaternion.Z;
             //quaternion.Z = -quaternion.Y;
             //quaternion.Y = z;
+            //quaternion.X = -quaternion.X;
+            //quaternion.Y = quaternion.Y;
+            //quaternion.Z = -quaternion.Y;
+            Quaternion q = new Quaternion(-quaternion.X, -quaternion.Y, quaternion.Z, quaternion.W);
 
-            var rotation = Matrix.CreateFromQuaternion(quaternion);
+            var rotation = Matrix.CreateFromQuaternion(q);
             for (int i = 0; i < vertices.Count; i++)
             {
                 var v = vertices[i].Position;
